@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from commands import BasicCommands
+from config.cog import Cogs
+
 
 class Bot(commands.Bot):
     def __init__(self, command_prefix, intents):
@@ -15,4 +16,4 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         # Adiciona os Cogs ao bot
-        await self.add_cog(BasicCommands(self))
+        await self.add_cog(Cogs(self))

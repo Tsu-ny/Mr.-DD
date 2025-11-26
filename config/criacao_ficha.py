@@ -2,10 +2,10 @@ import json
 import os
 
 class CriarFichaDePersonagem:
-    def __init__(self, nome, classe, hp):
-        self.nome = str(nome)
-        self.classe = str(classe)
-        self.hp = int(hp)
+    def __init__(self, nome, classe):
+        self.nome = str(nome.title())
+        self.classe = str(classe.title())
+        self._hp = 100
 
     def criar_json(self):
         '''
@@ -18,3 +18,5 @@ class CriarFichaDePersonagem:
         with open(path, 'w', encoding="UTF-8") as arquivo_json:
             json.dump(self.__dict__, arquivo_json, ensure_ascii=False, indent=4)
 
+# p = CriarFichaDePersonagem("Aragorn", "Guerreiro")
+# print(p.__dict__)
