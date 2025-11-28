@@ -1,11 +1,35 @@
 import discord 
 from discord.ext import commands
-import asyncio
+import datetime
 from config.criacao_ficha import CriarFichaDePersonagem
 
 class Cogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    
+    @staticmethod
+    def criar_embed(title, color, description=None, name1=None, value1=None, name2=None, value2=None):
+        embed = discord.Embed(
+            title=title,
+            description=description,
+            color=color,
+            timestamp=datetime.datetime.now()
+        )
+
+        # Campo 1
+        if name1 is not None and value1 is not None:
+            embed.add_field(name=name1, value=value1)
+
+        # Campo 2
+        if name2 is not None and value2 is not None:
+            embed.add_field(name=name2, value=value2)
+
+        return embed
+
+    @commands.command()
+    async def teste(self, ctx):
+        embed = self.criar_embed(title="Título", description="Descrição", color=discord.Color.random(), name1="Nome", value1="Valor\nValor")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def ping(self, ctx):
@@ -20,15 +44,13 @@ class Cogs(commands.Cog):
         Cria um embed perguntando se o usuário tem certeza que deseja criar uma ficha de personagem.
         '''
 
-        embed = discord.Embed(
-            title="Tem certeza que deseja criar uma ficha de personagem?",
-            description="✅ para Sim\n"
-            "❌ para Não",
-            color=discord.Color.yellow()
-        )
+        embed = self.criar_embed(
+                title="Tem certeza que deseja criar uma ficha de personagem?",
+                description="✅ - Sim\n❌ - Não",
+                color=discord.Color.yellow()
+                )
 
-
-        msg = await ctx.reply(embed=embed)
+        msg = await ctx.reply(embed=embed, delete_after=30) # Resposta do Bot
         options = ["✅", "❌"] # ✅ | ❌
             
         for emoji in options:
@@ -46,32 +68,11 @@ class Cogs(commands.Cog):
            
         reaction, user = await self.bot.wait_for('reaction_add', check=checkup) # Espera pela reação do usuário
         
-
-        if reaction.emoji == "❌": # Filtra a seleção do usuário
+        # Filtra a seleção do usuário
+        if reaction.emoji == "❌": 
             await msg.delete()
-            await ctx.send("Criação de ficha cancelada.")
-            return
+            await ctx.send("Criação de ficha cancelada.", delete_after=5)
         else:
             await msg.delete()
 
-        await ctx.send("Iniciando criação de ficha de personagem...")
-        # questions = {
-        #     "nome": "Qual nome vai definir para o seu personagem?",
-        #     "classe": "Qual classe ele terá?"
-        # }
-
-        # answers = {}
-
-        # for key, question in questions.items():
-        #     await ctx.send(question)
-
-        #     def check(m):
-        #         return m.author == ctx.author and m.channel == ctx.channel
-
-        #     try:
-        #         msg = await self.bot.wait_for('message', check=check, timeout=60)
-        #     except asyncio.TimeoutError:
-        #         await ctx.send("Tempo esgotado! Por favor, tente novamente.")
-        #         return
-        #     else:
-        #         answers[key] = msg.content
+        await ctx.send("Iniciando criação de ficha de personagem...", delete_after=5)
